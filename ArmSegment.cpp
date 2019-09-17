@@ -16,6 +16,11 @@ ArmSegment::ArmSegment(ArmSegment *voorganger_, double length_, double angle_, d
     checkAngle();
 }
 
+// Get current angle of this segment
+double ArmSegment::getAngle() {
+    return angle;
+}
+
 // Recursive add all angles of all arm segments
 double ArmSegment::getTotalAngle() {
     if (!voorganger) {
@@ -45,7 +50,7 @@ void ArmSegment::rotateTo(double targetX, double targetY, double handX, double h
     std::vector<double> target = getVector(targetX, targetY, mount[0], mount[1]);
     std::vector<double> hand = getVector(handX, handY, mount[0], mount[1]);
     double turnAngle = getVectorAngle(target,hand);
-    
+
     // Get cross product to determine rotation direction
     if (crossproduct(target, hand)[2] > 0.0) {
         angle -= turnAngle;

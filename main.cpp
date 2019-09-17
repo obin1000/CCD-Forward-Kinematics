@@ -4,6 +4,6 @@
 
 int main() {
     RobotArm arm;
-    arm.grabAt(10,10, 1);
+    arm.grabAt(5,20, 1);
     return 0;
 }

@@ -7,9 +7,9 @@
 
 RobotArm::RobotArm() {
     // Create size number of arm segment with default values
-    arm.push_back(new ArmSegment(nullptr,10,10,0,360));
-    arm.push_back(new ArmSegment(arm[0],10,10,0,360));
-    arm.push_back(new ArmSegment(arm[1],10,10,0,360));
+    arm.push_back(new ArmSegment(nullptr,10,90,-360,360));
+    arm.push_back(new ArmSegment(arm[0],10,90,-360,360));
+    arm.push_back(new ArmSegment(arm[1],10,90,-360,360));
 }
 
 void RobotArm::printArm() {
@@ -41,23 +41,28 @@ void RobotArm::grabAt(double grabX, double grabY, double marginOfError) {
     int currentSegment = (int) arm.size()-1;
     ArmSegment * tempSeg;
     std::vector<double> vectorHand;
-    printArm();
     // Loop till the arm reaches an acceptable distance from the target
     while(error > marginOfError){
-        if (loops++ == 100) break;
+        if (loops++ == 10000) break;
         while(currentSegment >= 0) {
             arm[currentSegment]->rotateTo(grabX, grabY, getGrijperX(),getGrijperY());
-            printArm();
             currentSegment--;
         }
         currentSegment = arm.size()-1;
         error = getError(getGrijperX(),getGrijperY(), grabX, grabY);
     }
 
-    std::cout << "HAHAHA Hebbes!! " << getGrijperX() << " " << getGrijperY();
-
+    std::cout << "\nHAHAHA Hebbes!!" << std::endl;
+    std::cout << "Handpositie\t X: " << getGrijperX() << " \tY: " << getGrijperY() << std::endl;
+    std::cout << "Target\t\t X: " << grabX << " \t\t\tY: " << grabY << std::endl;
+    std::cout << "In " << loops << " pogingen " << std::endl;
+    std::cout << "Angles: ";
+    for (auto & i : arm) {
+        std::cout << "   " << i->getAngle();
+    }
 }
 
 double RobotArm::getError(double handX, double handY, double targetX, double targetY) {
-    return fabs((handX - targetX) + (handY - targetY));
+    std::vector<double> handToTarget = {handX - targetX, handY - targetY, 0};
+    return ArmSegment::getVectorLen(handToTarget);
 }

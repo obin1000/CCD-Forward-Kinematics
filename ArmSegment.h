@@ -19,16 +19,17 @@ public:
     ArmSegment(ArmSegment * armSegment, double length, double angle, double maxHoekOnder, double maxHoekBoven);
     double getX();
     double getY();
+    double getAngle();
     double getTotalAngle();
     std::vector<double> getMountPoint();
     void checkAngle();
     void print();
     void rotateTo(double targetX, double targetY, double handX, double handY);
-    std::vector<double> crossproduct(std::vector<double> v1,std::vector<double> v2);
-    double getVectorLen(std::vector<double> vec);
-    double getDotProduct(std::vector<double> vec1, std::vector<double> vec2);
-    std::vector<double> getVector(double X1, double Y1, double X2, double Y2);
-    double getVectorAngle(std::vector<double> v1, std::vector<double> v2);
+    static std::vector<double> crossproduct(std::vector<double> v1,std::vector<double> v2);
+    static double getVectorLen(std::vector<double> vec);
+    static double getDotProduct(std::vector<double> vec1, std::vector<double> vec2);
+    static std::vector<double> getVector(double X1, double Y1, double X2, double Y2);
+    static double getVectorAngle(std::vector<double> v1, std::vector<double> v2);
 };
 
 
