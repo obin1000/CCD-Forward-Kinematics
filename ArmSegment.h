@@ -13,23 +13,22 @@ private:
     double maxHoekOnder;        // Demping rotatie naar onder.
     double maxHoekBoven;        // Demping rotatie naar boven.
     ArmSegment * voorganger{};  // Segment voorafgaand aan dit segment, nullptr als het begin segment is.
-    std::vector<double> vectorHand; // Vector from this segment to the hand
 
 
 public:
     ArmSegment(ArmSegment * armSegment, double length, double angle, double maxHoekOnder, double maxHoekBoven);
     double getX();
     double getY();
-    double getAngle();
     double getTotalAngle();
     std::vector<double> getMountPoint();
     void checkAngle();
     void print();
-    void rotateTo(const std::vector<double>& targetEndpoint, double handX, double handY);
+    void rotateTo(double targetX, double targetY, double handX, double handY);
     std::vector<double> crossproduct(std::vector<double> v1,std::vector<double> v2);
     double getVectorLen(std::vector<double> vec);
     double getDotProduct(std::vector<double> vec1, std::vector<double> vec2);
-    std::vector<double> getVectorHand(double armX, double armY);
+    std::vector<double> getVector(double X1, double Y1, double X2, double Y2);
+    double getVectorAngle(std::vector<double> v1, std::vector<double> v2);
 };
 
 

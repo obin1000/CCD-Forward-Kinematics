@@ -2,6 +2,7 @@
 // Created by obin1000 on 10-09-19.
 //
 #include <iostream>
+#include <cmath>
 #include "RobotArm.h"
 
 RobotArm::RobotArm() {
@@ -33,8 +34,8 @@ double RobotArm::getGrijperY() {
     return getSegmentAt((int) arm.size()-1)->getY();
 }
 
-void RobotArm::grabAt(std::vector<double> grabLocation, double marginOfError) {
-    std::cout << "Ik ga je pakken ;) ... als je op " << grabLocation[0] << " " << grabLocation[1] << " bent" << std::endl;
+void RobotArm::grabAt(double grabX, double grabY, double marginOfError) {
+    std::cout << "Ik ga je pakken ;) ... als je op " <<  grabX << " " << grabY << " bent" << std::endl;
     double error = 999999;
     int loops = 0;
     int currentSegment = (int) arm.size()-1;
@@ -42,16 +43,15 @@ void RobotArm::grabAt(std::vector<double> grabLocation, double marginOfError) {
     std::vector<double> vectorHand;
     printArm();
     // Loop till the arm reaches an acceptable distance from the target
-    while(true){
+    while(error > marginOfError){
         if (loops++ == 100) break;
         while(currentSegment >= 0) {
-            arm[currentSegment]->rotateTo(grabLocation,getGrijperX(),getGrijperY());
-            currentSegment--;
+            arm[currentSegment]->rotateTo(grabX, grabY, getGrijperX(),getGrijperY());
             printArm();
+            currentSegment--;
         }
         currentSegment = arm.size()-1;
-        error = getError(getGrijperX(),getGrijperY(),grabLocation[0],grabLocation[1]);
-
+        error = getError(getGrijperX(),getGrijperY(), grabX, grabY);
     }
 
     std::cout << "HAHAHA Hebbes!! " << getGrijperX() << " " << getGrijperY();
@@ -59,5 +59,5 @@ void RobotArm::grabAt(std::vector<double> grabLocation, double marginOfError) {
 }
 
 double RobotArm::getError(double handX, double handY, double targetX, double targetY) {
-    return (double) (handX - targetX) + (handY - targetY);
+    return fabs((handX - targetX) + (handY - targetY));
 }

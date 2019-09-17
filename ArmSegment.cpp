@@ -16,12 +16,6 @@ ArmSegment::ArmSegment(ArmSegment *voorganger_, double length_, double angle_, d
     checkAngle();
 }
 
-// Get current angle of this segment
-double ArmSegment::getAngle() {
-    return angle;
-}
-
-
 // Recursive add all angles of all arm segments
 double ArmSegment::getTotalAngle() {
     if (!voorganger) {
@@ -45,27 +39,15 @@ double ArmSegment::getY() {
     return voorganger->getY() + length * cos(getTotalAngle());
 }
 // Rotate this segment to a target
-// A vector looks like: [X,Y,Z]
-// a * b = |a| |b| cos(hoek)
-// (a * b) / ( len(a) * len(b)) = cos(hoek)
-void ArmSegment::rotateTo(const std::vector<double>& targetVec, double handX, double handY) {
-    // Get dot product and calculate rotation angle
-    getVectorHand(handX,handY);
-    double dotProduct = getDotProduct(targetVec,vectorHand);
-    double mag = (getVectorLen(vectorHand)*getVectorLen(targetVec));
-    double turnAngle;
-    if(mag == 0){
-        turnAngle = 0;
-    }else{
-        turnAngle = (dotProduct / mag);
-    }
-
-    if(turnAngle < -1.0) turnAngle = -1.0;
-    if(turnAngle > 1.0) turnAngle = 1.0;
-    // Get cross product for rotation direction
-    std::vector<double> crossProduct = crossproduct(targetVec,vectorHand);
-
-    if (crossProduct[2] > 0.0) {
+void ArmSegment::rotateTo(double targetX, double targetY, double handX, double handY) {
+    // Create vectors to the target and the hand and calculate the angle between them
+    std::vector<double> mount = getMountPoint();
+    std::vector<double> target = getVector(targetX, targetY, mount[0], mount[1]);
+    std::vector<double> hand = getVector(handX, handY, mount[0], mount[1]);
+    double turnAngle = getVectorAngle(target,hand);
+    
+    // Get cross product to determine rotation direction
+    if (crossproduct(target, hand)[2] > 0.0) {
         angle -= turnAngle;
     }
     else {
@@ -77,7 +59,6 @@ void ArmSegment::rotateTo(const std::vector<double>& targetVec, double handX, do
 void ArmSegment::print() {
     std::cout << " X: " << getX();
     std::cout << " \t\tY: " << getY();
-    std::cout << " \t\tAngle: " << getAngle();
     std::cout << " \t\tTotalAngle: " << getTotalAngle() << std::endl;
 }
 
@@ -95,13 +76,21 @@ void ArmSegment::checkAngle(){
 //    }
 }
 
+std::vector<double> ArmSegment::getMountPoint() {
+    if(!voorganger){
+        return {0,0,0};
+    }
+    return {voorganger->getX(),voorganger->getY(),0};
+}
+
+
 // Bestaat hier echt geen standaard lib voor?!
 std::vector<double> ArmSegment::crossproduct(std::vector<double> v1,std::vector<double> v2)
 {
-    std::vector<double> cross(v1.size());
-    cross[0] = (v1[1]*v2[2]) - (v1[2]*v2[1]);
-    cross[1] = (v1[2]*v2[0]) - (v1[0]*v2[2]);
-    cross[2] = (v1[0]*v2[1]) - (v1[1]*v2[0]);
+    std::vector<double> cross(3);
+    cross[0] = v1[1] * v2[2] - v1[2] * v2[1];
+    cross[1] = v1[2] * v2[0] - v1[0] * v2[2];
+    cross[2] = v1[0] * v2[1] - v1[1] * v2[0];
     return cross;
 }
 
@@ -112,20 +101,29 @@ double ArmSegment::getVectorLen(std::vector<double> vector) {
 }
 
 double ArmSegment::getDotProduct(std::vector<double> vec1, std::vector<double> vec2) {
-    return (vec1[0] * vec2[0]) + (vec1[1] * vec2[1]) + (vec1[2] * vec2[2]);
+    return vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec1[2] * vec2[2];
 }
 
-std::vector<double> ArmSegment::getVectorHand(double handX, double handY) {
-    vectorHand.clear();
-    vectorHand.push_back(handX  - getX());
-    vectorHand.push_back(handY - getY());
-    vectorHand.push_back(0);
-    return vectorHand;
+std::vector<double> ArmSegment::getVector(double X1, double Y1, double X2, double Y2) {
+    std::vector<double> temp(3);
+    temp[0] = X1 - X2;
+    temp[1] = Y1 - Y2;
+    temp[2] = 0;
+    return temp;
 }
-
-std::vector<double> ArmSegment::getMountPoint() {
-    if(!voorganger){
-        return {0,0,0};
+// A vector looks like: [X,Y,Z]
+// a * b = |a| |b| cos(hoek)
+// acos((a * b) / ( len(a) * len(b))) = hoek
+double ArmSegment::getVectorAngle(std::vector<double> v1, std::vector<double> v2) {
+    double dotProduct = getDotProduct(v1, v2);
+    double keertje = (getVectorLen(v1) * getVectorLen(v2));
+    double hoekkie;
+    if (keertje == 0){
+        hoekkie = 0;
+    }else{
+        hoekkie = dotProduct / keertje;
     }
-    return {voorganger->getX(),voorganger->getY(),0};
+    if(hoekkie < -1.0) hoekkie = -1.0;
+    if(hoekkie > 1.0) hoekkie = 1.0;
+    return acos(hoekkie);
 }

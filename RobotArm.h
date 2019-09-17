@@ -20,7 +20,7 @@ public:
     ArmSegment * getSegmentAt(int segment);
     double getGrijperX();
     double getGrijperY();
-    void grabAt(std::vector<double> grabLocation, double marginOfError);
+    void grabAt(double grabX, double grabY, double marginOfError);
     double getError(double handX, double handY, double targetX, double targetY);
 
 };
