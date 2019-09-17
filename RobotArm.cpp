@@ -4,13 +4,11 @@
 #include <iostream>
 #include "RobotArm.h"
 
-RobotArm::RobotArm(int size) {
-    ArmSegment * temp = nullptr;
+RobotArm::RobotArm() {
     // Create size number of arm segment with default values
-    for (int i = 0; i < size; ++i) {
-        arm.push_back(new ArmSegment(temp,10,10,0,360));
-        temp = arm[i];
-    }
+    arm.push_back(new ArmSegment(nullptr,10,10,0,360));
+    arm.push_back(new ArmSegment(arm[0],10,10,0,360));
+    arm.push_back(new ArmSegment(arm[1],10,10,0,360));
 }
 
 void RobotArm::printArm() {
@@ -21,7 +19,7 @@ void RobotArm::printArm() {
 }
 
 ArmSegment * RobotArm::getSegmentAt(int segment) {
-    if(segment > arm.size()){
+    if(segment > arm.size()-1){
         return nullptr;
     }
     return arm[segment];
@@ -47,32 +45,17 @@ void RobotArm::grabAt(std::vector<double> grabLocation, double marginOfError) {
     while(true){
         if (loops++ == 100) break;
         while(currentSegment >= 0) {
-            tempSeg = arm[currentSegment];
-            vectorHand = getVectorHand(tempSeg);
-            tempSeg->rotateTo(grabLocation, vectorHand);
-            std::cout << currentSegment << " SEG " << tempSeg << std::endl;
+            arm[currentSegment]->rotateTo(grabLocation,getGrijperX(),getGrijperY());
             currentSegment--;
-            //printArm();
+            printArm();
         }
         currentSegment = arm.size()-1;
-        // error = getError(getGrijperX(),getGrijperY(),grabLocation[0],grabLocation[1]);
+        error = getError(getGrijperX(),getGrijperY(),grabLocation[0],grabLocation[1]);
 
     }
 
     std::cout << "HAHAHA Hebbes!! " << getGrijperX() << " " << getGrijperY();
 
-}
-// Get the vector to the end of the arm from given segment
-std::vector<double> RobotArm::getVectorHand(ArmSegment * fromSegment) {
-    std::vector<double > veccie(3);
-    double armX = arm[arm.size()-1]->getX();
-    double armY = arm[arm.size()-1]->getY();
-    double segmentX = fromSegment->getX();
-    double segmentY = fromSegment->getY();
-    veccie[0] = armX  - segmentX;
-    veccie[1] = armY - segmentY;
-    veccie[2] = 0;
-    return veccie;
 }
 
 double RobotArm::getError(double handX, double handY, double targetX, double targetY) {

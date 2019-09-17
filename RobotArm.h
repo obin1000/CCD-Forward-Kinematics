@@ -15,13 +15,12 @@ private:
     std::vector<ArmSegment *> arm;
 
 public:
-    RobotArm(int size);
+    RobotArm();
     void printArm();
     ArmSegment * getSegmentAt(int segment);
     double getGrijperX();
     double getGrijperY();
     void grabAt(std::vector<double> grabLocation, double marginOfError);
-    std::vector<double> getVectorHand(ArmSegment *fromSegment);
     double getError(double handX, double handY, double targetX, double targetY);
 
 };
