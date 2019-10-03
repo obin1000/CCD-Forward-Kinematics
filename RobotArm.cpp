@@ -7,9 +7,9 @@
 
 RobotArm::RobotArm() {
     // Create size number of arm segment with default values
-    arm.push_back(new ArmSegment(nullptr,10,90,-360,360));
-    arm.push_back(new ArmSegment(arm[0],10,90,-360,360));
-    arm.push_back(new ArmSegment(arm[1],10,90,-360,360));
+    arm.push_back(new ArmSegment(nullptr,10,0,-300,300));
+    arm.push_back(new ArmSegment(arm[0],10,0,-300,300));
+    arm.push_back(new ArmSegment(arm[1],10,0,-300,300));
 }
 
 void RobotArm::printArm() {

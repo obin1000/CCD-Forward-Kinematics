@@ -52,7 +52,7 @@ void ArmSegment::rotateTo(double targetX, double targetY, double handX, double h
     double turnAngle = getVectorAngle(target,hand);
 
     // Get cross product to determine rotation direction
-    if (crossproduct(target, hand)[2] > 0.0) {
+    if (crossproduct(target, hand)[2] < 0.0) {
         angle -= turnAngle;
     }
     else {
@@ -69,16 +69,16 @@ void ArmSegment::print() {
 
 void ArmSegment::checkAngle(){
     // Check voor demping overscheiding
-//    if (angle < maxHoekOnder) {
-//        std::cout << " Potverdikkie, die draaihoek is veel te klein " << angle << " min is " << maxHoekOnder
-//                  << std::endl;
-//        angle = maxHoekOnder;
-//    }
-//    if (angle > maxHoekBoven) {
-//        std::cout << " Potverdikkie, die draaihoek is veel te groot " << angle << " max is " << maxHoekBoven
-//                  << std::endl;
-//        angle = maxHoekBoven;
-//    }
+    if (angle < maxHoekOnder) {
+        std::cout << " Potverdikkie, die draaihoek is veel te klein " << angle << " min is " << maxHoekOnder
+                  << std::endl;
+        angle = maxHoekOnder;
+    }
+    if (angle > maxHoekBoven) {
+        std::cout << " Potverdikkie, die draaihoek is veel te groot " << angle << " max is " << maxHoekBoven
+                  << std::endl;
+        angle = maxHoekBoven;
+    }
 }
 
 std::vector<double> ArmSegment::getMountPoint() {
